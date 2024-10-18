@@ -1,17 +1,21 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
-func callbackMap(cfg *config) error {
+func callbackMapb(cfg *config) error {
 
-	resp, err := cfg.pokeapiClient.ListLocationArea(cfg.nextLocationAreaURL)
+	if cfg.previousLocationAreaURL == nil {
+
+		return errors.New("you can't go back from here")
+	}
+	resp, err := cfg.pokeapiClient.ListLocationArea(cfg.previousLocationAreaURL)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(("Locations areas:"))
 	for _, area := range resp.Results {
 		fmt.Printf(" - %s\n", area.Name)
 	}
