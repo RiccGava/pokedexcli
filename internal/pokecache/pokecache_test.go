@@ -45,5 +45,4 @@ func TestAddCache(t *testing.T) {
 			t.Errorf("%s doesn't match %s", string(actual), string(cas.inputVal))
 		}
 	}
-
 }
