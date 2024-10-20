@@ -1,9 +1,12 @@
 package pokecache
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestCreateCache(t *testing.T) {
-	cache := NewCache()
+	cache := NewCache(time.Millisecond)
 	if cache.cache == nil {
 		t.Error("cache is nil")
 	}
@@ -11,7 +14,7 @@ func TestCreateCache(t *testing.T) {
 }
 
 func TestAddCache(t *testing.T) {
-	cache := NewCache()
+	cache := NewCache(time.Millisecond)
 
 	cases := []struct {
 		inputKey string
@@ -45,4 +48,38 @@ func TestAddCache(t *testing.T) {
 			t.Errorf("%s doesn't match %s", string(actual), string(cas.inputVal))
 		}
 	}
+}
+
+func TestReap(t *testing.T) {
+	interval := time.Millisecond * 10
+	cache := NewCache(interval)
+
+	keyOne := "key1"
+	cache.Add(keyOne, []byte("val1"))
+
+	time.Sleep(interval + time.Millisecond)
+
+	_, ok := cache.Get(keyOne)
+
+	if ok {
+		t.Errorf("%s is still present", keyOne)
+	}
+
+}
+
+func TestReapFail(t *testing.T) {
+	interval := time.Millisecond * 10
+	cache := NewCache(interval)
+
+	keyOne := "key1"
+	cache.Add(keyOne, []byte("val1"))
+
+	time.Sleep(interval / 2)
+
+	_, ok := cache.Get(keyOne)
+
+	if !ok {
+		t.Errorf("%s is not present in the cache but should be ", keyOne)
+	}
+
 }
